@@ -122,6 +122,14 @@ def rateMovie(user_id, movie_id):
     movie = db.get(Movie, movie_id)
     if user is None or movie is None:
         return redirect(url_for('home'))
+    print(request.form['rating'])
+    db.execute('SELECT R.rowid \
+                FROM Rating R \
+                WHERE R.movie =' + str(movie.rowid) + ' AND R.user = ' + str(user.rowid) + ';')
+    exists = list(db.cursor.fetchall())
+    print(exists)
+    assert(len(exists)==0)
+    assert(1 <= int(request.form['rating']) and int(request.form['rating']) <= 5)
     rating  = Rating([0, user.rowid, movie.rowid, request.form['rating']])
     db.insert(rating)
     return json.dumps({'success': True})
